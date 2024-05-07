@@ -1,0 +1,26 @@
+{
+  "name": "@suyongs/electron-persist",
+  "version": "0.1.0",
+  "description": "Scalable storage solution for Electron Application",
+  "scripts": {
+    "build": "pnpm -r --parallel --filter='./packages/*' run build",
+    "build:core": "pnpm -r --filter='./packages/core' run build",
+    "build:main": "pnpm -r --filter='./packages/main' run build"
+  },
+  "keywords": [],
+  "author": "Su-Yong",
+  "license": "MIT",
+  "packageManager": "pnpm@9.1.0",
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": "^9.0.0"
+  },
+  "dependencies": {
+    "@electron-persist/core": "workspace:*",
+    "@electron-persist/main": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}

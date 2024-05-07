@@ -1,0 +1,26 @@
+{
+  "name": "@electron-persist/core",
+  "version": "0.1.0",
+  "description": "A core package of electron-persist",
+  "type": "module",
+  "main": "dist/index.umd.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "keywords": [],
+  "author": "Su-Yong",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.2.11",
+    "vite-plugin-dts": "^3.9.1"
+  }
+}
