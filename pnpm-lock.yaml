@@ -23,6 +23,10 @@ importers:
         version: 5.2.11
 
   packages/core:
+    dependencies:
+      type-fest:
+        specifier: ^4.18.2
+        version: 4.18.2
     devDependencies:
       vite:
         specifier: ^5.2.11
@@ -565,6 +569,10 @@ packages:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
 
+  type-fest@4.18.2:
+    resolution: {integrity: sha512-+suCYpfJLAe4OXS6+PPXjW3urOS4IoP9waSiLuXfLgqZODKw/aWwASvzqE886wA0kQgGy0mIWyhd87VpqIy6Xg==}
+    engines: {node: '>=16'}
+
   typescript@5.4.2:
     resolution: {integrity: sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==}
     engines: {node: '>=14.17'}
@@ -1101,6 +1109,8 @@ snapshots:
   supports-preserve-symlinks-flag@1.0.0: {}
 
   to-fast-properties@2.0.0: {}
+
+  type-fest@4.18.2: {}
 
   typescript@5.4.2: {}
 
