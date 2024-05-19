@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { assert, describe, expect, it, vi } from 'vitest';
 
 import { Config } from '../src/Config';
 
@@ -204,10 +204,32 @@ describe('property', () => {
       tuple: ['tuple', 42],
     });
   });
+
+  it('unwatch', () => {
+    const config = new Config<TestConfig>({
+      defaultValue: getTestValue(),
+    });
+
+    const fooCallback = vi.fn();
+    const callback = vi.fn();
+    config.watch('foo', fooCallback);
+    config.watchAll(callback);
+
+    config.set('foo', 'newFoo');
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(callback).toBeCalledTimes(1);
+
+    config.unwatch(fooCallback);
+    config.unwatch(callback);
+
+    config.set('foo', 'newFoo2');
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(callback).toBeCalledTimes(1);
+  });
 });
 
 describe('extra', () => {
-  it('pollution', () => {
+  it('pollution check', () => {
     const value = { value: 1 };
     const config = new Config<{ value: number }>({
       defaultValue: value,
@@ -217,5 +239,11 @@ describe('extra', () => {
 
     expect(value).toEqual({ value: 1 });
     expect(config.get('value')).toBe(2);
+  });
+
+  it('get before initialize', () => {
+    const config = new Config<TestConfig>();
+
+    assert.throw(() => config.get('foo'), 'Config value is not set. Pass `defaultValue` or `persister` property to the constructor');
   });
 });
