@@ -77,9 +77,7 @@ describe('property', () => {
     expect(config.get('tuple.1')).not.toBe(43);
 
     // @ts-expect-error
-    expect(config.get('not.exists')).toBe(null);
-    // @ts-expect-error
-    expect(config.get('not.exists')).not.toBe(undefined);
+    assert.throw(() => config.get('not.exists'), '"not.exists" is not found in the config value');
   });
 
   it('set', () => {
@@ -104,7 +102,7 @@ describe('property', () => {
     expect(config.get('some.nested')).not.toEqual({ value: 'value' });
 
     // @ts-expect-error
-    expect(config.set('not.exists', 'newValue')).toBe(false);
+    assert.throw(() => config.set('not.exists', 'newValue'), '"not.exists" is not found in the config value');
   });
 
   it('watch', () => {

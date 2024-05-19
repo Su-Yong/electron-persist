@@ -3,16 +3,11 @@ import { Persister } from './persister';
 
 import type { Get, Paths } from 'type-fest';
 
-type Serializer = typeof JSON.parse;
-type Deserializer = typeof JSON.stringify;
-
 export interface ConfigOptions<T> {
   defaultValue?: T;
 
   validator?: Validator;
   persister?: Persister;
-  serializer?: Serializer;
-  deserializer?: Deserializer;
 }
 
 type ConfigValue<T, Key, Fallback = never> = Key extends string | readonly string[] ? Get<T, Key> : Fallback;
@@ -25,8 +20,6 @@ export class Config<T> {
 
   private validator: Validator | null = null;
   private persister: Persister | null = null;
-  private serializer: Serializer;
-  private deserializer: Deserializer;
 
   private value: T | null = null;
 
@@ -34,24 +27,20 @@ export class Config<T> {
     defaultValue,
     validator,
     persister,
-    serializer = JSON.parse,
-    deserializer = JSON.stringify,
   }: ConfigOptions<T> = {}) {
     this.validator = validator ?? null;
     this.persister = persister ?? null;
-    this.serializer = serializer;
-    this.deserializer = deserializer;
 
     this.value = structuredClone(defaultValue) ?? null;
   }
 
-  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>): boolean {
+  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
     const path = String(name).split('.');
     let result: any = this.value;
 
     for (let i = 0; i < path.length - 1; i++) {
       const key = path[i];
-      if (result[key] === undefined) return false;
+      if (result[key] === undefined) throw Error(`"${path.join('.')}" is not found in the config value`);
 
       result = result[key];
     }
@@ -60,18 +49,19 @@ export class Config<T> {
     result[key] = value;
 
     this.broadcast(name);
-
-    return true;
   }
 
-  get<Key extends Paths<T>>(name: Key): ConfigValue<T, Key> | null {
+  get(): T;
+  get(name: Paths<T>): ConfigValue<T, Paths<T>>;
+  get<Key extends Paths<T>>(name?: Key): ConfigValue<T, Key> | T {
     if (this.value === null) throw Error('Config value is not set. Pass `defaultValue` or `persister` property to the constructor');
+    if (name === undefined) return this.value;
 
     const path = String(name).split('.');
     let result: any = this.value;
 
     for (const key of path) {
-      if (result === undefined) return null;
+      if (result === undefined) throw Error(`"${path.join('.')}" is not found in the config value`);
 
       result = result[key];
     }
