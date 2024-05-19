@@ -3,9 +3,16 @@ import { Persister } from './persister';
 
 import type { Get, Paths } from 'type-fest';
 
-export interface ConfigOptions {
-  validator: Validator;
-  persister: Persister;
+type Serializer = typeof JSON.parse;
+type Deserializer = typeof JSON.stringify;
+
+export interface ConfigOptions<T> {
+  defaultValue?: T;
+
+  validator?: Validator;
+  persister?: Persister;
+  serializer?: Serializer;
+  deserializer?: Deserializer;
 }
 
 type ConfigValue<T, Key, Fallback = never> = Key extends string | readonly string[] ? Get<T, Key> : Fallback;
@@ -16,8 +23,21 @@ export class Config<T> {
   } = {};
   private allListeners: ((value: T) => void)[] = [];
 
-  constructor(options: ConfigOptions) {
-    throw Error('Not implemented');
+  private validator: Validator | null = null;
+  private persister: Persister | null = null;
+  private serializer: Serializer;
+  private deserializer: Deserializer;
+
+  constructor({
+    validator,
+    persister,
+    serializer = JSON.parse,
+    deserializer = JSON.stringify,
+  }: ConfigOptions<T> = {}) {
+    this.validator = validator ?? null;
+    this.persister = persister ?? null;
+    this.serializer = serializer;
+    this.deserializer = deserializer;
   }
 
   set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
