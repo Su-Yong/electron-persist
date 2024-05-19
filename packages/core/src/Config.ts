@@ -42,7 +42,7 @@ export class Config<T> {
     this.serializer = serializer;
     this.deserializer = deserializer;
 
-    this.value = defaultValue ?? null;
+    this.value = structuredClone(defaultValue) ?? null;
   }
 
   set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>): boolean {
@@ -59,10 +59,14 @@ export class Config<T> {
     const key = path[path.length - 1];
     result[key] = value;
 
+    this.broadcast(name);
+
     return true;
   }
 
   get<Key extends Paths<T>>(name: Key): ConfigValue<T, Key> | null {
+    if (this.value === null) throw Error('Config value is not set. Pass `defaultValue` or `persister` property to the constructor');
+
     const path = String(name).split('.');
     let result: any = this.value;
 
@@ -97,5 +101,15 @@ export class Config<T> {
         this.listeners[key as Paths<T>] = this.listeners[key as Paths<T>]?.filter((cb) => cb !== callback) ?? [];
       }
     }
+  }
+
+  private broadcast(key: Paths<T>) {
+    (Object.keys(this.listeners) as Paths<T>[])
+      .filter((it) => String(it).startsWith(String(key)))
+      .forEach((key) => {
+        this.listeners[key]?.forEach((listener) => listener(this.get(key)!));
+      });
+
+    this.allListeners.forEach((listener) => listener(this.value!));
   }
 }

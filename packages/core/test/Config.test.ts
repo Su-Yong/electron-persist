@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { Config } from '../src/Config';
 
@@ -17,7 +17,7 @@ type TestConfig = {
   };
   tuple: [string, number];
 };
-const testValue: TestConfig = {
+const getTestValue = (): TestConfig => ({
   foo: 'foo',
   bar: 42,
   baz: true,
@@ -31,12 +31,12 @@ const testValue: TestConfig = {
     ],
   },
   tuple: ['tuple', 42],
-};
+});
 
-describe('Config', () => {
+describe('property', () => {
   it('get', () => {
     const config = new Config<TestConfig>({
-      defaultValue: testValue,
+      defaultValue: getTestValue(),
     });
 
     expect(config.get('foo')).toBe('foo');
@@ -82,9 +82,9 @@ describe('Config', () => {
     expect(config.get('not.exists')).not.toBe(undefined);
   });
 
-  it ('set', () => {
+  it('set', () => {
     const config = new Config<TestConfig>({
-      defaultValue: testValue,
+      defaultValue: getTestValue(),
     });
 
     config.set('foo', 'newFoo');
@@ -105,5 +105,117 @@ describe('Config', () => {
 
     // @ts-expect-error
     expect(config.set('not.exists', 'newValue')).toBe(false);
+  });
+
+  it('watch', () => {
+    const config = new Config<TestConfig>({
+      defaultValue: getTestValue(),
+    });
+
+    const fooCallback = vi.fn();
+    const someNestValueCallback = vi.fn();
+
+    config.watch('foo', fooCallback);
+    config.watch('some.nested.value', someNestValueCallback);
+    expect(fooCallback).toBeCalledTimes(0);
+    expect(someNestValueCallback).toBeCalledTimes(0);
+
+    config.set('foo', 'newFoo');
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(someNestValueCallback).toBeCalledTimes(0);
+    expect(fooCallback).toBeCalledWith('newFoo');
+
+    config.set('bar', 31);
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(someNestValueCallback).toBeCalledTimes(0);
+
+    config.set('some.nested.value', 'newValue');
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(someNestValueCallback).toBeCalledTimes(1);
+    expect(someNestValueCallback).toBeCalledWith('newValue');
+
+    config.set('some.nested', { value: 'anotherValue' });
+    expect(fooCallback).toBeCalledTimes(1);
+    expect(someNestValueCallback).toBeCalledTimes(2);
+    expect(someNestValueCallback).toBeCalledWith('anotherValue');
+  });
+
+  it('watchAll', () => {
+    const config = new Config<TestConfig>({
+      defaultValue: getTestValue(),
+    });
+
+    const callback = vi.fn();
+
+    config.watchAll(callback);
+    expect(callback).toBeCalledTimes(0);
+
+    config.set('foo', 'newFoo');
+    expect(callback).toBeCalledTimes(1);
+    expect(callback).toBeCalledWith({
+      foo: 'newFoo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
+
+    config.set('bar', 31);
+    expect(callback).toBeCalledTimes(2);
+    expect(callback).toBeCalledWith({
+      foo: 'newFoo',
+      bar: 31,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
+
+    config.set('some.nested.value', 'newValue');
+    expect(callback).toBeCalledTimes(3);
+    expect(callback).toBeCalledWith({
+      foo: 'newFoo',
+      bar: 31,
+      baz: true,
+      some: {
+        nested: {
+          value: 'newValue',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
+  });
+});
+
+describe('extra', () => {
+  it('pollution', () => {
+    const value = { value: 1 };
+    const config = new Config<{ value: number }>({
+      defaultValue: value,
+    });
+
+    config.set('value', 2);
+
+    expect(value).toEqual({ value: 1 });
+    expect(config.get('value')).toBe(2);
   });
 });
