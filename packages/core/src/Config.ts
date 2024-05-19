@@ -28,7 +28,10 @@ export class Config<T> {
   private serializer: Serializer;
   private deserializer: Deserializer;
 
+  private value: T | null = null;
+
   constructor({
+    defaultValue,
     validator,
     persister,
     serializer = JSON.parse,
@@ -38,14 +41,38 @@ export class Config<T> {
     this.persister = persister ?? null;
     this.serializer = serializer;
     this.deserializer = deserializer;
+
+    this.value = defaultValue ?? null;
   }
 
-  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
-    throw Error('Not implemented');
+  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>): boolean {
+    const path = String(name).split('.');
+    let result: any = this.value;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      const key = path[i];
+      if (result[key] === undefined) return false;
+
+      result = result[key];
+    }
+
+    const key = path[path.length - 1];
+    result[key] = value;
+
+    return true;
   }
 
-  get<Key extends Paths<T>>(name: Key): ConfigValue<T, Key> {
-    throw Error('Not implemented');
+  get<Key extends Paths<T>>(name: Key): ConfigValue<T, Key> | null {
+    const path = String(name).split('.');
+    let result: any = this.value;
+
+    for (const key of path) {
+      if (result === undefined) return null;
+
+      result = result[key];
+    }
+
+    return result;
   }
 
   // Utility
