@@ -32,6 +32,11 @@ export class Config<T> {
     this.persister = persister ?? null;
 
     this.value = structuredClone(defaultValue) ?? null;
+
+    this.persister?.read().then((value) => {
+      this.value = structuredClone(value) as T;
+      this.broadcast();
+    });
   }
 
   set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
@@ -49,6 +54,7 @@ export class Config<T> {
     result[key] = value;
 
     this.broadcast(name);
+    this.persister?.write(this.value!);
   }
 
   get(): T;
@@ -93,12 +99,16 @@ export class Config<T> {
     }
   }
 
-  private broadcast(key: Paths<T>) {
-    (Object.keys(this.listeners) as Paths<T>[])
-      .filter((it) => String(it).startsWith(String(key)))
-      .forEach((key) => {
-        this.listeners[key]?.forEach((listener) => listener(this.get(key)!));
-      });
+  private broadcast(): void;
+  private broadcast(key: Paths<T>): void;
+  private broadcast(key?: Paths<T>) {
+    if (key !== undefined) {
+      (Object.keys(this.listeners) as Paths<T>[])
+        .filter((it) => String(it).startsWith(String(key)))
+        .forEach((key) => {
+          this.listeners[key]?.forEach((listener) => listener(this.get(key)!));
+        });
+    }
 
     this.allListeners.forEach((listener) => listener(this.value!));
   }

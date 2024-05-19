@@ -20,10 +20,10 @@ importers:
         version: 5.4.5
       vite:
         specifier: ^5.2.11
-        version: 5.2.11
+        version: 5.2.11(@types/node@20.12.12)
       vitest:
         specifier: ^1.6.0
-        version: 1.6.0
+        version: 1.6.0(@types/node@20.12.12)
 
   packages/core:
     dependencies:
@@ -31,21 +31,24 @@ importers:
         specifier: ^4.18.2
         version: 4.18.2
     devDependencies:
+      '@types/node':
+        specifier: ^20.12.12
+        version: 20.12.12
       vite:
         specifier: ^5.2.11
-        version: 5.2.11
+        version: 5.2.11(@types/node@20.12.12)
       vite-plugin-dts:
         specifier: ^3.9.1
-        version: 3.9.1(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11)
+        version: 3.9.1(@types/node@20.12.12)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12))
 
   packages/main:
     devDependencies:
       vite:
         specifier: ^5.2.11
-        version: 5.2.11
+        version: 5.2.11(@types/node@20.12.12)
       vite-plugin-dts:
         specifier: ^3.9.1
-        version: 3.9.1(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11)
+        version: 3.9.1(@types/node@20.12.12)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12))
 
 packages:
 
@@ -343,6 +346,9 @@ packages:
 
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
+
+  '@types/node@20.12.12':
+    resolution: {integrity: sha512-eWLDGF/FOSPtAvEqeRAQ4C8LSA7M1I7i0ky1I8U7kD1J5ITyW3AsRhQrKVoWf5pFKZ2kILsEGJhsI9r93PYnOw==}
 
   '@vitest/expect@1.6.0':
     resolution: {integrity: sha512-ixEvFVQjycy/oNgHjqsL6AZCDduC+tflRluaHIzKIsdbzkLn2U/iBnVeJwB6HsIjQBdfMR8Z0tRxKUsvFJEeWQ==}
@@ -777,6 +783,9 @@ packages:
   ufo@1.5.3:
     resolution: {integrity: sha512-Y7HYmWaFwPUmkoQCUIAYpKqkOf+SbVj/2fJJZ4RJMCfZp0rTGwRbzQD+HghfnhKOjL9E01okqz+ncJskGYfBNw==}
 
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+
   universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
@@ -978,23 +987,23 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.4.15': {}
 
-  '@microsoft/api-extractor-model@7.28.13':
+  '@microsoft/api-extractor-model@7.28.13(@types/node@20.12.12)':
     dependencies:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@rushstack/node-core-library': 4.0.2
+      '@rushstack/node-core-library': 4.0.2(@types/node@20.12.12)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.43.0':
+  '@microsoft/api-extractor@7.43.0(@types/node@20.12.12)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.28.13
+      '@microsoft/api-extractor-model': 7.28.13(@types/node@20.12.12)
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@rushstack/node-core-library': 4.0.2
+      '@rushstack/node-core-library': 4.0.2(@types/node@20.12.12)
       '@rushstack/rig-package': 0.5.2
-      '@rushstack/terminal': 0.10.0
-      '@rushstack/ts-command-line': 4.19.1
+      '@rushstack/terminal': 0.10.0(@types/node@20.12.12)
+      '@rushstack/ts-command-line': 4.19.1(@types/node@20.12.12)
       lodash: 4.17.21
       minimatch: 3.0.8
       resolve: 1.22.8
@@ -1069,7 +1078,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.17.2':
     optional: true
 
-  '@rushstack/node-core-library@4.0.2':
+  '@rushstack/node-core-library@4.0.2(@types/node@20.12.12)':
     dependencies:
       fs-extra: 7.0.1
       import-lazy: 4.0.0
@@ -1077,20 +1086,24 @@ snapshots:
       resolve: 1.22.8
       semver: 7.5.4
       z-schema: 5.0.5
+    optionalDependencies:
+      '@types/node': 20.12.12
 
   '@rushstack/rig-package@0.5.2':
     dependencies:
       resolve: 1.22.8
       strip-json-comments: 3.1.1
 
-  '@rushstack/terminal@0.10.0':
+  '@rushstack/terminal@0.10.0(@types/node@20.12.12)':
     dependencies:
-      '@rushstack/node-core-library': 4.0.2
+      '@rushstack/node-core-library': 4.0.2(@types/node@20.12.12)
       supports-color: 8.1.1
+    optionalDependencies:
+      '@types/node': 20.12.12
 
-  '@rushstack/ts-command-line@4.19.1':
+  '@rushstack/ts-command-line@4.19.1(@types/node@20.12.12)':
     dependencies:
-      '@rushstack/terminal': 0.10.0
+      '@rushstack/terminal': 0.10.0(@types/node@20.12.12)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -1102,6 +1115,10 @@ snapshots:
   '@types/argparse@1.0.38': {}
 
   '@types/estree@1.0.5': {}
+
+  '@types/node@20.12.12':
+    dependencies:
+      undici-types: 5.26.5
 
   '@vitest/expect@1.6.0':
     dependencies:
@@ -1539,6 +1556,8 @@ snapshots:
 
   ufo@1.5.3: {}
 
+  undici-types@5.26.5: {}
+
   universalify@0.1.2: {}
 
   uri-js@4.4.1:
@@ -1547,13 +1566,13 @@ snapshots:
 
   validator@13.11.0: {}
 
-  vite-node@1.6.0:
+  vite-node@1.6.0(@types/node@20.12.12):
     dependencies:
       cac: 6.7.14
       debug: 4.3.4
       pathe: 1.1.2
       picocolors: 1.0.0
-      vite: 5.2.11
+      vite: 5.2.11(@types/node@20.12.12)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -1564,9 +1583,9 @@ snapshots:
       - supports-color
       - terser
 
-  vite-plugin-dts@3.9.1(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11):
+  vite-plugin-dts@3.9.1(@types/node@20.12.12)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12)):
     dependencies:
-      '@microsoft/api-extractor': 7.43.0
+      '@microsoft/api-extractor': 7.43.0(@types/node@20.12.12)
       '@rollup/pluginutils': 5.1.0(rollup@4.17.2)
       '@vue/language-core': 1.8.27(typescript@5.4.5)
       debug: 4.3.4
@@ -1575,21 +1594,22 @@ snapshots:
       typescript: 5.4.5
       vue-tsc: 1.8.27(typescript@5.4.5)
     optionalDependencies:
-      vite: 5.2.11
+      vite: 5.2.11(@types/node@20.12.12)
     transitivePeerDependencies:
       - '@types/node'
       - rollup
       - supports-color
 
-  vite@5.2.11:
+  vite@5.2.11(@types/node@20.12.12):
     dependencies:
       esbuild: 0.20.2
       postcss: 8.4.38
       rollup: 4.17.2
     optionalDependencies:
+      '@types/node': 20.12.12
       fsevents: 2.3.3
 
-  vitest@1.6.0:
+  vitest@1.6.0(@types/node@20.12.12):
     dependencies:
       '@vitest/expect': 1.6.0
       '@vitest/runner': 1.6.0
@@ -1608,9 +1628,11 @@ snapshots:
       strip-literal: 2.1.0
       tinybench: 2.8.0
       tinypool: 0.8.4
-      vite: 5.2.11
-      vite-node: 1.6.0
+      vite: 5.2.11(@types/node@20.12.12)
+      vite-node: 1.6.0(@types/node@20.12.12)
       why-is-node-running: 2.2.2
+    optionalDependencies:
+      '@types/node': 20.12.12
     transitivePeerDependencies:
       - less
       - lightningcss
