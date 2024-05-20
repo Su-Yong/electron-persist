@@ -2,8 +2,7 @@ import fs from 'node:fs/promises';
 
 import { assert, describe, expect, it, vi } from 'vitest';
 
-import { FilePersister } from '../src/persister';
-import { Config } from '../src/Config';
+import { Config, FallbackValidator, FilePersister } from '../src';
 import { wait } from './util';
 
 type TestConfig = {
@@ -21,6 +20,33 @@ type TestConfig = {
   };
   tuple: [string, number];
 };
+
+describe('Persister', () => {
+  it('validator', async () => {
+    const fallback: TestConfig = {
+      foo: '',
+      bar: 0,
+      baz: false,
+      some: {
+        nested: {
+          value: '',
+        },
+        items: [],
+      },
+      tuple: ['', 0],
+    };
+    const config = new Config<TestConfig>({
+      persister: new FilePersister({
+        path: 'empty.json',
+        validator: FallbackValidator(fallback),
+      }),
+    });
+
+    await wait(50);
+
+    expect(config.get()).toEqual(fallback);
+  });
+});
 
 describe('FilePersister', () => {
   it('read', async () => {

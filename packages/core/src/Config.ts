@@ -1,4 +1,3 @@
-import { Validator } from './Validator';
 import { Persister } from './persister';
 
 import type { Get, Paths } from 'type-fest';
@@ -6,8 +5,7 @@ import type { Get, Paths } from 'type-fest';
 export interface ConfigOptions<T> {
   defaultValue?: T;
 
-  validator?: Validator;
-  persister?: Persister;
+  persister?: Persister<T>;
 }
 
 type ConfigValue<T, Key, Fallback = never> = Key extends string | readonly string[] ? Get<T, Key> : Fallback;
@@ -18,25 +16,25 @@ export class Config<T> {
   } = {};
   private allListeners: ((value: T) => void)[] = [];
 
-  private validator: Validator | null = null;
-  private persister: Persister | null = null;
+  private persister: Persister<T> | null = null;
 
   private value: T | null = null;
 
   constructor({
     defaultValue,
-    validator,
     persister,
   }: ConfigOptions<T> = {}) {
-    this.validator = validator ?? null;
     this.persister = persister ?? null;
 
     this.value = structuredClone(defaultValue) ?? null;
 
-    this.persister?.read().then((value) => {
-      this.value = structuredClone(value) as T;
+    (async () => {
+      if (this.persister === null) return;
+
+      const value = await this.persister.read().catch(() => null);
+      this.value = structuredClone(this.persister.validate(value));
       this.broadcast();
-    });
+    })();
   }
 
   set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
