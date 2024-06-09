@@ -86,6 +86,7 @@ describe('FilePersister', () => {
         ],
       },
       tuple: ['tuple', 42],
+      __version__: null,
     }));
   });
 
@@ -117,6 +118,7 @@ describe('FilePersister', () => {
         ],
       },
       tuple: ['tuple', 42],
+      __version__: null,
     }, null, 2));
   });
 
@@ -152,6 +154,7 @@ describe('FilePersister', () => {
       },
       tuple: ['tuple', 42],
       __test: true,
+      __version__: null,
     }));
   });
 });
