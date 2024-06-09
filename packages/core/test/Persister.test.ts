@@ -57,12 +57,61 @@ describe('Persister', () => {
     expect(config.get()).toEqual(fallback);
   });
 
-  it('migrator', async () => {
+  it('migrator: default', async () => {
     const config = new Config<TestConfig>({
       persister: new FilePersister({
         path: 'old.json',
         version: '0.5.2',
         migrator: new Migrator<TestConfig>({
+          '0.5.0': (prev) => {
+            const data = prev as OldTestConfig;
+
+            return {
+              ...data,
+              some: {
+                nested: {
+                  value: data.some.nested as string,
+                },
+                items: (data.some.items as number[]).map((value, index) => ({
+                  name: `item${index + 1}`,
+                  value,
+                })),
+              },
+              tuple: [data.tuple[0], Number(data.tuple[1])],
+            } satisfies TestConfig;
+          },
+        }),
+      }),
+    });
+
+    await wait(50);
+
+    expect(config.get()).toEqual({
+      foo: 'foo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
+  });
+
+  it('migrator: complex range', async () => {
+    const config = new Config<TestConfig>({
+      persister: new FilePersister({
+        path: 'old.json',
+        version: '0.5.2',
+        migrator: new Migrator<TestConfig>({
+          '0.4.0 < && <= 0.5.0': () => {
+            return 'unreachable code';
+          },
           '<0.5.0': (prev) => {
             const data = prev as OldTestConfig;
 
@@ -79,6 +128,12 @@ describe('Persister', () => {
               },
               tuple: [data.tuple[0], Number(data.tuple[1])],
             } satisfies TestConfig;
+          },
+          '<=0.8.0': () => {
+            return 'unreachable code';
+          },
+          '*': () => {
+            return 'unreachable code';
           },
         }),
       }),
