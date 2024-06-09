@@ -58,6 +58,7 @@ describe('Persister', () => {
   });
 
   it('migrator: default', async () => {
+    const count = vi.fn();
     const config = new Config<TestConfig>({
       persister: new FilePersister({
         path: 'old.json',
@@ -65,6 +66,7 @@ describe('Persister', () => {
         migrator: new Migrator<TestConfig>({
           '0.5.0': (prev) => {
             const data = prev as OldTestConfig;
+            count();
 
             return {
               ...data,
@@ -86,6 +88,7 @@ describe('Persister', () => {
 
     await wait(50);
 
+    expect(count.mock.results.length).toBe(1);
     expect(config.get()).toEqual({
       foo: 'foo',
       bar: 42,
@@ -101,6 +104,23 @@ describe('Persister', () => {
       },
       tuple: ['tuple', 42],
     });
+    expect(count.mock.results.length).toBe(1);
+    expect(config.get()).toEqual({ // check for migrator does not run twice
+      foo: 'foo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
+    expect(count.mock.results.length).toBe(1);
   });
 
   it('migrator: complex range', async () => {

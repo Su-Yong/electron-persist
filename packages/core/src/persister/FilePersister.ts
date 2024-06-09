@@ -49,7 +49,7 @@ export class FilePersister<T> extends Persister<T> {
 
     if (this.version && configVersion !== this.version) {
       if (this.migrator) {
-        const migratedResult = this.validate(this.migrator.migrate(result, configVersion, this.version));
+        const migratedResult = this.migrator.migrate(result, configVersion, this.version);
         await this.write(migratedResult);
 
         return migratedResult;
