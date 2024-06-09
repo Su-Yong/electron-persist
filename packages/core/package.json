@@ -22,10 +22,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.12.12",
+    "@types/semver": "^7.5.8",
     "vite": "^5.2.11",
     "vite-plugin-dts": "^3.9.1"
   },
   "dependencies": {
+    "semver": "^7.6.2",
     "type-fest": "^4.18.2"
   }
 }
