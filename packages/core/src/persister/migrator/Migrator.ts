@@ -43,6 +43,12 @@ export class Migrator<T> {
 
   constructor(migrations: Migrations, options: MigratorOptions = {}) {
     this.migrations = Object.entries(migrations)
+      .filter(([versionMatcher]) => {
+        const isValid = semver.valid(versionMatcher);
+        if (!isValid && isDev) console.warn(`Invalid version "${versionMatcher}"`);
+
+        return !!isValid;
+      })
       .map(([versionMatcher, value]) => this.migrationToData(value, versionMatcher))
       .filter((it) => (
         it.versionMatcher !== 'beforeAll'
@@ -62,7 +68,7 @@ export class Migrator<T> {
     };
   }
 
-  migrate(prevConfig: unknown, configVersion: string): T {
+  migrate(prevConfig: unknown, configVersion: string, applicationVersion: string): T {
     let nowConfig = structuredClone(prevConfig);
     const migrationQueue = this.getMigrationQueue();
 
@@ -70,13 +76,14 @@ export class Migrator<T> {
 
     for (const migration of migrationQueue) {
       if (!semver.satisfies(configVersion, migration.versionMatcher)) continue;
+      if (semver.satisfies(applicationVersion, migration.versionMatcher)) continue;
 
       nowConfig = this.migrations.beforeEach?.run(nowConfig) ?? nowConfig;
       nowConfig = migration.run(nowConfig);
       nowConfig = this.migrations.afterEach?.run(nowConfig) ?? nowConfig;
     }
 
-    nowConfig = this.migrations.afterAll?.run(nowConfig) ?? nowConfig
+    nowConfig = this.migrations.afterAll?.run(nowConfig) ?? nowConfig;
 
     return nowConfig as T;
   }
@@ -125,12 +132,19 @@ export class Migrator<T> {
     }
 
     if (versionMatcher) {
+      let versionRange = versionMatcher;
+      if (!this.isRange(versionMatcher)) versionRange = `<${versionMatcher}`;
+
       return {
         ...omitData,
-        versionMatcher,
+        versionMatcher: versionRange,
       };
     }
 
     return omitData;
+  }
+
+  private isRange(version: string): boolean {
+    return semver.valid(version) === null && semver.validRange(version) !== null;
   }
 }
