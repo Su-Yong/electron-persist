@@ -2,9 +2,19 @@ import fs from 'node:fs/promises';
 
 import { assert, describe, expect, it, vi } from 'vitest';
 
-import { Config, FallbackValidator, FilePersister } from '../src';
+import { Config, FallbackValidator, FilePersister, Migrator } from '../src';
 import { wait } from './util';
 
+type OldTestConfig = {
+  foo: string;
+  bar: number;
+  baz: boolean;
+  some: {
+    nested: string;
+    items: number[];
+  };
+  tuple: [string, string];
+};
 type TestConfig = {
   foo: string;
   bar: number;
@@ -45,6 +55,52 @@ describe('Persister', () => {
     await wait(50);
 
     expect(config.get()).toEqual(fallback);
+  });
+
+  it('migrator', async () => {
+    const config = new Config<TestConfig>({
+      persister: new FilePersister({
+        path: 'old.json',
+        version: '0.5.2',
+        migrator: new Migrator<TestConfig>({
+          '<0.5.0': (prev) => {
+            const data = prev as OldTestConfig;
+
+            return {
+              ...data,
+              some: {
+                nested: {
+                  value: data.some.nested as string,
+                },
+                items: (data.some.items as number[]).map((value, index) => ({
+                  name: `item${index + 1}`,
+                  value,
+                })),
+              },
+              tuple: [data.tuple[0], Number(data.tuple[1])],
+            } satisfies TestConfig;
+          },
+        }),
+      }),
+    });
+
+    await wait(50);
+
+    expect(config.get()).toEqual({
+      foo: 'foo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+    });
   });
 });
 
@@ -177,6 +233,18 @@ vi.mock('node:fs/promises', async () => {
         ],
       },
       tuple: ['tuple', 42],
+      __version__: '0.5.2',
+    }),
+    'old.json': JSON.stringify({
+      foo: 'foo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: 'value',
+        items: [1, 2],
+      },
+      tuple: ['tuple', '42'],
+      __version__: '0.3.7',
     }),
   };
 

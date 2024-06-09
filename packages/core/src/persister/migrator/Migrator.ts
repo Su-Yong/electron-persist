@@ -50,10 +50,10 @@ export class Migrator<T> {
         && it.versionMatcher !== 'beforeEach'
         && it.versionMatcher !== 'afterEach'
       ));
-    this.migrations.afterAll = this.migrationToData(migrations.afterAll);
-    this.migrations.beforeAll = this.migrationToData(migrations.beforeAll);
-    this.migrations.beforeEach = this.migrationToData(migrations.beforeEach);
-    this.migrations.afterEach = this.migrationToData(migrations.afterEach);
+    if (migrations.afterAll) this.migrations.afterAll = this.migrationToData(migrations.afterAll);
+    if (migrations.beforeAll) this.migrations.beforeAll = this.migrationToData(migrations.beforeAll);
+    if (migrations.beforeEach) this.migrations.beforeEach = this.migrationToData(migrations.beforeEach);
+    if (migrations.afterEach) this.migrations.afterEach = this.migrationToData(migrations.afterEach);
 
     this.options = {
       loose: false,
@@ -66,15 +66,17 @@ export class Migrator<T> {
     let nowConfig = structuredClone(prevConfig);
     const migrationQueue = this.getMigrationQueue();
 
-    nowConfig = this.migrations.beforeAll?.run(nowConfig);
+    nowConfig = this.migrations.beforeAll?.run(nowConfig) ?? nowConfig;
 
     for (const migration of migrationQueue) {
-      nowConfig = this.migrations.beforeEach?.run(nowConfig);
+      if (!semver.satisfies(configVersion, migration.versionMatcher)) continue;
+
+      nowConfig = this.migrations.beforeEach?.run(nowConfig) ?? nowConfig;
       nowConfig = migration.run(nowConfig);
-      nowConfig = this.migrations.afterEach?.run(nowConfig);
+      nowConfig = this.migrations.afterEach?.run(nowConfig) ?? nowConfig;
     }
 
-    nowConfig = this.migrations.afterAll?.run(nowConfig);
+    nowConfig = this.migrations.afterAll?.run(nowConfig) ?? nowConfig
 
     return nowConfig as T;
   }

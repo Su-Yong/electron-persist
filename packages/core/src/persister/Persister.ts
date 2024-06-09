@@ -10,10 +10,12 @@ export interface PersisterOptions<T> {
 export abstract class Persister<T> {
   private validator: Validator<T> | null;
 
+  protected migrator: Migrator<T> | null;
   protected version: string | null;
 
-  constructor({ validator, version }: PersisterOptions<T>) {
+  constructor({ validator, migrator, version }: PersisterOptions<T>) {
     this.validator = validator ?? null;
+    this.migrator = migrator ?? null;
     this.version = version ?? null;
   }
 
