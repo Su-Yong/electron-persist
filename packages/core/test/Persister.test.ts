@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 
-import { assert, describe, expect, it, vi } from 'vitest';
+import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Config, FallbackValidator, FilePersister, Migrator } from '../src';
 import { wait } from './util';
@@ -157,6 +157,80 @@ describe('Persister', () => {
       tuple: ['tuple', 42],
     });
   });
+
+  it('migrator: special property', async () => {
+    const check = vi.fn();
+
+    const config = new Config<TestConfig>({
+      persister: new FilePersister({
+        path: 'old.json',
+        version: '0.5.2',
+        migrator: new Migrator<TestConfig>({
+          beforeAll: (prev) => {
+            check(prev);
+          },
+          beforeEach: (prev) => {
+            return {
+              ...prev as OldTestConfig,
+              before: ('before' in (prev as Record<string, number>) ? (prev as Record<string, number>).before : 0) + 1,
+            };
+          },
+          afterEach: (prev) => {
+            return {
+              ...prev as OldTestConfig,
+              after: ('after' in (prev as Record<string, number>) ? (prev as Record<string, number>).after : 0) + 1,
+            };
+          },
+          afterAll: (prev) => {
+            check(prev);
+          },
+          '0.4.0': (prev) => prev,
+          '<0.5.0': (prev) => {
+            const data = prev as OldTestConfig;
+
+            return {
+              ...data,
+              some: {
+                nested: {
+                  value: data.some.nested as string,
+                },
+                items: (data.some.items as number[]).map((value, index) => ({
+                  name: `item${index + 1}`,
+                  value,
+                })),
+              },
+              tuple: [data.tuple[0], Number(data.tuple[1])],
+            } satisfies TestConfig;
+          },
+        }),
+      }),
+    });
+
+    await wait(50);
+
+    expect(check.mock.results.length).toBe(2);
+    expect(config.get()).toEqual({
+      foo: 'foo',
+      bar: 42,
+      baz: true,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: 'item1', value: 1 },
+          { name: 'item2', value: 2 },
+        ],
+      },
+      tuple: ['tuple', 42],
+      before: 2,
+      after: 2,
+    });
+  });
+
+  beforeEach(() => {
+    (fs as unknown as { reset: () => void }).reset();
+  })
 });
 
 describe('FilePersister', () => {
@@ -273,34 +347,36 @@ describe('FilePersister', () => {
 // mock
 
 vi.mock('node:fs/promises', async () => {
+  const testData = JSON.stringify({
+    foo: 'foo',
+    bar: 42,
+    baz: true,
+    some: {
+      nested: {
+        value: 'value',
+      },
+      items: [
+        { name: 'item1', value: 1 },
+        { name: 'item2', value: 2 },
+      ],
+    },
+    tuple: ['tuple', 42],
+    __version__: '0.5.2',
+  });
+  const oldData = JSON.stringify({
+    foo: 'foo',
+    bar: 42,
+    baz: true,
+    some: {
+      nested: 'value',
+      items: [1, 2],
+    },
+    tuple: ['tuple', '42'],
+    __version__: '0.3.7',
+  });
   const data: Record<string, unknown> = {
-    'test.json': JSON.stringify({
-      foo: 'foo',
-      bar: 42,
-      baz: true,
-      some: {
-        nested: {
-          value: 'value',
-        },
-        items: [
-          { name: 'item1', value: 1 },
-          { name: 'item2', value: 2 },
-        ],
-      },
-      tuple: ['tuple', 42],
-      __version__: '0.5.2',
-    }),
-    'old.json': JSON.stringify({
-      foo: 'foo',
-      bar: 42,
-      baz: true,
-      some: {
-        nested: 'value',
-        items: [1, 2],
-      },
-      tuple: ['tuple', '42'],
-      __version__: '0.3.7',
-    }),
+    'test.json': testData,
+    'old.json': oldData,
   };
 
   return {
@@ -316,6 +392,10 @@ vi.mock('node:fs/promises', async () => {
 
         data[path] = content;
       },
+      reset() {
+        data['test.json'] = testData;
+        data['old.json'] = oldData;
+      }
     },
   };
 });

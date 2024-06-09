@@ -44,10 +44,10 @@ export class Migrator<T> {
   constructor(migrations: Migrations, options: MigratorOptions = {}) {
     this.migrations = Object.entries(migrations)
       .filter(([versionMatcher]) => {
-        const isValid = semver.valid(versionMatcher);
-        if (!isValid && isDev) console.warn(`Invalid version "${versionMatcher}"`);
+        const isInvalid = !semver.valid(versionMatcher) && !semver.validRange(versionMatcher);
+        if (isInvalid && isDev) console.warn(`Invalid version "${versionMatcher}"`);
 
-        return !!isValid;
+        return !isInvalid;
       })
       .map(([versionMatcher, value]) => this.migrationToData(value, versionMatcher))
       .filter((it) => (
