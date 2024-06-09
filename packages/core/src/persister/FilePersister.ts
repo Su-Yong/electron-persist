@@ -21,6 +21,8 @@ export class FilePersister<T> extends Persister<T> {
   constructor(options: FilePersisterOptions<T> | string) {
     super({
       validator: typeof options !== 'string' ? options.validator : undefined,
+      migrator: typeof options !== 'string' ? options.migrator : undefined,
+      version: typeof options !== 'string' ? options.version : undefined,
     });
 
     if (typeof options === 'string') {
@@ -36,9 +38,25 @@ export class FilePersister<T> extends Persister<T> {
   async read() {
     const str = await fs.readFile(this.path, 'utf-8');
     const result = this.deserializer(str);
+    const version = result[this.versionField];
 
     if (typeof result === 'object') delete result[this.versionField];
     else if (isDev) console.warn('The config file is not an object. Please make sure it is a valid JSON object.');
+
+    if (isDev && (!this.version || !version)) {
+      console.warn('No version detected. Please set a version for the Application.');
+    }
+
+    if (this.version && version !== this.version) {
+      if (this.migrator) {
+        const migratedResult = this.validate(this.migrator.migrate(result, version));
+        this.version = version;
+
+        return migratedResult;
+      } else if (isDev) {
+        console.warn(`The version of the config (${version}) does not match the version of the Application (${this.version}).`);
+      }
+    }
 
     return result;
   }
