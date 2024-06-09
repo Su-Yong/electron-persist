@@ -1,14 +1,20 @@
 import { Validator } from './validator';
+import { Migrator } from './migrator';
 
 export interface PersisterOptions<T> {
   validator?: Validator<T>;
+  migrator?: Migrator<T>;
+  version?: string;
 }
 
 export abstract class Persister<T> {
   private validator: Validator<T> | null;
 
-  constructor({ validator }: PersisterOptions<T>) {
+  protected version: string | null;
+
+  constructor({ validator, version }: PersisterOptions<T>) {
     this.validator = validator ?? null;
+    this.version = version ?? null;
   }
 
   validate(data: unknown): T {
