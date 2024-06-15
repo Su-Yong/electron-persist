@@ -1,4 +1,4 @@
-name: CI
+name: test electron-persist
 
 on:
   pull_request:
