@@ -1,8 +1,6 @@
-import fs from 'node:fs/promises';
+import { describe, expect, it, vi } from 'vitest';
 
-import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { Config, FallbackValidator, FilePersister, Migrator } from '../src';
+import { Config, FallbackValidator, Migrator, MemoryPersister } from '../src';
 import { wait } from './util';
 
 type OldTestConfig = {
@@ -30,6 +28,34 @@ type TestConfig = {
   };
   tuple: [string, number];
 };
+const versionSymbol = Symbol('version');
+const testData = {
+  foo: 'foo',
+  bar: 42,
+  baz: true,
+  some: {
+    nested: {
+      value: 'value',
+    },
+    items: [
+      { name: 'item1', value: 1 },
+      { name: 'item2', value: 2 },
+    ],
+  },
+  tuple: ['tuple', 42],
+  [versionSymbol]: '0.5.2',
+};
+const oldData = {
+  foo: 'foo',
+  bar: 42,
+  baz: true,
+  some: {
+    nested: 'value',
+    items: [1, 2],
+  },
+  tuple: ['tuple', '42'],
+  [versionSymbol]: '0.4.0',
+};
 
 describe('Persister', () => {
   it('validator', async () => {
@@ -46,8 +72,8 @@ describe('Persister', () => {
       tuple: ['', 0],
     };
     const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'empty.json',
+      persister: new MemoryPersister({
+        reference: null as any,
         validator: FallbackValidator(fallback),
       }),
     });
@@ -60,8 +86,9 @@ describe('Persister', () => {
   it('migrator: default', async () => {
     const count = vi.fn();
     const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'old.json',
+      persister: new MemoryPersister({
+        reference: structuredClone(oldData),
+        versionSymbol,
         version: '0.5.2',
         migrator: new Migrator<TestConfig>({
           '0.5.0': (prev) => {
@@ -88,7 +115,7 @@ describe('Persister', () => {
 
     await wait(50);
 
-    expect(count.mock.results.length).toBe(1);
+    expect(count.mock.results.length).toEqual(1);
     expect(config.get()).toEqual({
       foo: 'foo',
       bar: 42,
@@ -125,8 +152,9 @@ describe('Persister', () => {
 
   it('migrator: complex range', async () => {
     const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'old.json',
+      persister: new MemoryPersister({
+        reference: structuredClone(oldData),
+        versionSymbol,
         version: '0.5.2',
         migrator: new Migrator<TestConfig>({
           '0.4.0 < && <= 0.5.0': () => {
@@ -182,8 +210,9 @@ describe('Persister', () => {
     const check = vi.fn();
 
     const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'old.json',
+      persister: new MemoryPersister({
+        reference: structuredClone(oldData),
+        versionSymbol,
         version: '0.5.2',
         migrator: new Migrator<TestConfig>({
           beforeAll: (prev) => {
@@ -247,70 +276,22 @@ describe('Persister', () => {
       after: 2,
     });
   });
-
-  beforeEach(() => {
-    (fs as unknown as { reset: () => void }).reset();
-  })
 });
 
-describe('FilePersister', () => {
+describe('MemoryPersister', () => {
   it('read', async () => {
     const config = new Config<TestConfig>({
-      persister: new FilePersister('test.json'),
-    });
-
-    assert.throw(() => config.get(), 'Config value is not set. Pass `defaultValue` or `persister` property to the constructor');
-
-    await wait(50);
-
-    expect(config.get('foo')).toBe('foo');
-  });
-
-  it('write', async () => {
-    const config = new Config<TestConfig>({
-      persister: new FilePersister('test.json'),
-    });
-
-    await wait(50);
-
-    config.set('foo', 'newFoo');
-
-    await wait(50);
-
-    expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
-      foo: 'newFoo',
-      bar: 42,
-      baz: true,
-      some: {
-        nested: {
-          value: 'value',
-        },
-        items: [
-          { name: 'item1', value: 1 },
-          { name: 'item2', value: 2 },
-        ],
-      },
-      tuple: ['tuple', 42],
-      __version__: null,
-    }));
-  });
-
-  it('serializer', async () => {
-    const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'test.json',
-        serializer: (data) => JSON.stringify(data, null, 2),
+      persister: new MemoryPersister({
+        versionSymbol,
+        reference: structuredClone(testData),
+        version: '0.5.2',
       }),
     });
 
     await wait(50);
 
-    config.set('foo', 'newFoo');
-
-    await wait(50);
-
-    expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
-      foo: 'newFoo',
+    expect(config.get()).toEqual({
+      foo: 'foo',
       bar: 42,
       baz: true,
       some: {
@@ -323,99 +304,6 @@ describe('FilePersister', () => {
         ],
       },
       tuple: ['tuple', 42],
-      __version__: null,
-    }, null, 2));
-  });
-
-  it('deserializer', async () => {
-    const config = new Config<TestConfig>({
-      persister: new FilePersister({
-        path: 'test.json',
-        deserializer: (str) => ({
-          ...JSON.parse(str),
-          __test: true,
-        }),
-      }),
     });
-
-    await wait(50);
-
-    config.set('foo', 'newFoo');
-
-    await wait(50);
-
-    expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
-      foo: 'newFoo',
-      bar: 42,
-      baz: true,
-      some: {
-        nested: {
-          value: 'value',
-        },
-        items: [
-          { name: 'item1', value: 1 },
-          { name: 'item2', value: 2 },
-        ],
-      },
-      tuple: ['tuple', 42],
-      __test: true,
-      __version__: null,
-    }));
   });
-});
-
-// mock
-
-vi.mock('node:fs/promises', async () => {
-  const testData = JSON.stringify({
-    foo: 'foo',
-    bar: 42,
-    baz: true,
-    some: {
-      nested: {
-        value: 'value',
-      },
-      items: [
-        { name: 'item1', value: 1 },
-        { name: 'item2', value: 2 },
-      ],
-    },
-    tuple: ['tuple', 42],
-    __version__: '0.5.2',
-  });
-  const oldData = JSON.stringify({
-    foo: 'foo',
-    bar: 42,
-    baz: true,
-    some: {
-      nested: 'value',
-      items: [1, 2],
-    },
-    tuple: ['tuple', '42'],
-    __version__: '0.3.7',
-  });
-  const data: Record<string, unknown> = {
-    'test.json': testData,
-    'old.json': oldData,
-  };
-
-  return {
-    // ...(await vi.importActual<typeof import('node:fs/promises')>('node:fs/promises')),
-    default: {
-      readFile: async (path: string) => {
-        await wait(Math.random() * 30);
-
-        return data[path];
-      },
-      writeFile: async (path: string, content: string) => {
-        await wait(Math.random() * 30);
-
-        data[path] = content;
-      },
-      reset() {
-        data['test.json'] = testData;
-        data['old.json'] = oldData;
-      }
-    },
-  };
 });

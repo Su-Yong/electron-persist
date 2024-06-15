@@ -1,7 +1,6 @@
 import fs from 'node:fs/promises';
 
-import { Persister, PersisterOptions } from './Persister';
-import { isDev } from '../util';
+import { Persister, PersisterOptions } from '@electron-persist/core';
 
 export interface FilePersisterOptions<T> extends PersisterOptions<T> {
   path: string;
@@ -35,42 +34,23 @@ export class FilePersister<T> extends Persister<T> {
     }
   }
 
-  async read() {
+  protected async getConfigVersion() {
     const str = await fs.readFile(this.path, 'utf-8');
     const result = this.deserializer(str);
-    const configVersion = result[this.versionField];
+
+    return result[this.versionField];
+  }
+
+  async readData() {
+    const str = await fs.readFile(this.path, 'utf-8');
+    const result = this.deserializer(str);
 
     if (typeof result === 'object') delete result[this.versionField];
-    else if (isDev) console.warn('The config file is not an object. Please make sure it is a valid JSON object.');
-
-    if (isDev && (!this.version || !configVersion)) {
-      console.warn('No version detected. Please set a version for the Application.');
-    }
-
-    if (this.version && configVersion !== this.version) {
-      if (this.migrator) {
-        const migratedResult = this.migrator.migrate(result, configVersion, this.version);
-        await this.write(migratedResult);
-
-        return migratedResult;
-      } else if (isDev) {
-        console.warn(`The version of the config (${configVersion}) does not match the version of the Application (${this.version}).`);
-      }
-    }
 
     return result;
   }
 
-  async write(data: T) {
-    if (isDev) {
-      if (data && typeof data === 'object' && this.versionField in data) {
-        console.warn(`The field "${this.versionField}" is reserved for the version of the config. Please remove it from your config.`);
-      }
-      if (!this.version) {
-        console.warn('No version detected. Please set a version for the Application.');
-      }
-    }
-
+  async writeData(data: T) {
     const str = this.serializer({
       ...data,
       [this.versionField]: this.version,
