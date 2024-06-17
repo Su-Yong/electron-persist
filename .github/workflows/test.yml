@@ -1,4 +1,4 @@
-name: test electron-persist
+name: 'Run tests'
 
 on:
   pull_request:
@@ -27,10 +27,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20.x'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install -w --frozen-lockfile
 
       - name: Run tests
         run: pnpm test
