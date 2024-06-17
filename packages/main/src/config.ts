@@ -4,7 +4,7 @@ import { Channel } from '@electron-persist/shared';
 import { ipcMain, BrowserWindow } from 'electron';
 
 export const registerConfig = <K extends string, T>(win: BrowserWindow, name: K, config: Config<T>) => {
-  const windows: BrowserWindow[] = [];
+  const windows: BrowserWindow[] = [win];
 
   ipcMain.handle(Channel.GET(name), async (_, key) => config.get(key));
   ipcMain.handle(Channel.SET(name), async (_, key, value) => config.set(key, value));

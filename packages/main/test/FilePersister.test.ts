@@ -30,7 +30,7 @@ describe('FilePersister', () => {
 
     assert.throw(() => config.get(), 'Config value is not set. Pass `defaultValue` or `persister` property to the constructor');
 
-    await wait(50);
+    await wait(100);
 
     expect(config.get('foo')).toBe('foo');
   });
@@ -40,11 +40,11 @@ describe('FilePersister', () => {
       persister: new FilePersister('test.json'),
     });
 
-    await wait(50);
+    await wait(100);
 
     config.set('foo', 'newFoo');
 
-    await wait(50);
+    await wait(100);
 
     expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
       foo: 'newFoo',
@@ -72,11 +72,11 @@ describe('FilePersister', () => {
       }),
     });
 
-    await wait(50);
+    await wait(100);
 
     config.set('foo', 'newFoo');
 
-    await wait(50);
+    await wait(100);
 
     expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
       foo: 'newFoo',
@@ -107,11 +107,11 @@ describe('FilePersister', () => {
       }),
     });
 
-    await wait(50);
+    await wait(100);
 
     config.set('foo', 'newFoo');
 
-    await wait(50);
+    await wait(100);
 
     expect(await fs.readFile('test.json')).toEqual(JSON.stringify({
       foo: 'newFoo',
