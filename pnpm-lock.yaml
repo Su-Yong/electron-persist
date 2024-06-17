@@ -50,12 +50,43 @@ importers:
   packages/main:
     dependencies:
       '@electron-persist/core':
-        specifier: ../core
+        specifier: workspace:*
         version: link:../core
+      '@electron-persist/shared':
+        specifier: workspace:*
+        version: link:../shared
     devDependencies:
       electron:
         specifier: ^30.1.0
         version: 30.1.0
+      vite:
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.12)
+      vite-plugin-dts:
+        specifier: ^3.9.1
+        version: 3.9.1(@types/node@20.12.12)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12))
+
+  packages/renderer:
+    dependencies:
+      '@electron-persist/core':
+        specifier: workspace:*
+        version: link:../core
+      '@electron-persist/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      electron:
+        specifier: ^30.1.0
+        version: 30.1.0
+      vite:
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.12)
+      vite-plugin-dts:
+        specifier: ^3.9.1
+        version: 3.9.1(@types/node@20.12.12)(rollup@4.17.2)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12))
+
+  packages/shared:
+    devDependencies:
       vite:
         specifier: ^5.2.11
         version: 5.2.11(@types/node@20.12.12)
