@@ -1,10 +1,6 @@
 # electron-persist
 > Scalable storage solution for Electron Application
 
-> [!IMPORTANT]  
-> Note that this package isn't published yet.
-> This package will be published very soon.
-
 # Feature
 - 🚀 Fully typed with TypeScript
 - 🫙 Nearly zero dependencies: ([type-fest](https://github.com/sindresorhus/type-fest), [semver](https://github.com/npm/node-semver))
