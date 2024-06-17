@@ -1,6 +1,6 @@
 {
   "name": "@electron-persist/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A core package of electron-persist",
   "bugs": {
     "email": "simssy2205@gmail.com",
@@ -43,9 +43,6 @@
     "type-fest": "^4.18.2"
   },
   "release-it": {
-    "git": false,
-    "github": {
-      "release": true
-    }
+    "git": false
   }
 }

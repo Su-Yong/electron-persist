@@ -1,6 +1,6 @@
 {
   "name": "electron-persist",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Scalable storage solution for Electron Application",
   "homepage": "https://github.com/Su-Yong/electron-persist",
   "bugs": {
@@ -58,7 +58,11 @@
   },
   "release-it": {
     "git": {
+      "requireCleanWorkingDir": false,
       "commitMessage": "release: v${version}"
+    },
+    "github": {
+      "release": true
     }
   }
 }
