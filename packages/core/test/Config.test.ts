@@ -1,6 +1,6 @@
 import { assert, describe, expect, it, vi } from 'vitest';
 
-import { Config } from '../src/Config';
+import { Config } from '../src';
 
 type TestConfig = {
   foo: string;
@@ -80,6 +80,14 @@ describe('property', () => {
     assert.throw(() => config.get('not.exists'), '"not.exists" is not found in the config value');
   });
 
+  it('get all', () => {
+    const config = new Config<TestConfig>({
+      defaultValue: getTestValue(),
+    });
+
+    expect(config.get()).toEqual(getTestValue());
+  });
+
   it('set', () => {
     const config = new Config<TestConfig>({
       defaultValue: getTestValue(),
@@ -103,6 +111,31 @@ describe('property', () => {
 
     // @ts-expect-error
     assert.throw(() => config.set('not.exists', 'newValue'), '"not.exists" is not found in the config value');
+  });
+
+  it('set all', () => {
+    const newValue: TestConfig = {
+      foo: 'newFoo',
+      bar: 0,
+      baz: false,
+      some: {
+        nested: {
+          value: 'value',
+        },
+        items: [
+          { name: '1', value: 1 },
+          { name: '2', value: 2 },
+        ],
+      },
+      tuple: ['newTuple', 0],
+    };
+    const config = new Config<TestConfig>({
+      defaultValue: getTestValue(),
+    });
+
+    config.set(newValue);
+
+    expect(config.get()).toEqual(newValue);
   });
 
   it('watch', () => {

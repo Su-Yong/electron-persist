@@ -37,7 +37,17 @@ export class Config<T> {
     })();
   }
 
-  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>) {
+  set(value: T): void;
+  set<Key extends Paths<T>>(name: Key, value: ConfigValue<T, Key>): void;
+  set<Key extends Paths<T>>(param: Key | T, value?: ConfigValue<T, Key>) {
+    if (value === undefined) {
+      this.value = structuredClone(param as T);
+      this.broadcast();
+      this.persister?.write(this.value!);
+      return;
+    }
+
+    const name = param as Key;
     const path = String(name).split('.');
     let result: any = this.value;
 
