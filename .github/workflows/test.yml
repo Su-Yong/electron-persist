@@ -6,6 +6,11 @@ on:
       - 'master'
       - 'dev'
       - 'release'
+  push:
+    branches:
+      - 'master'
+      - 'dev'
+      - 'release'
 
 jobs:
   build:
