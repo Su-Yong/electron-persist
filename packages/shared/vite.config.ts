@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       formats: ['es', 'umd'],
-      name: 'electronPersistMain',
+      name: 'electronPersistShared',
       fileName: 'index',
     },
     outDir: 'dist',

@@ -15,15 +15,12 @@
   },
   "scripts": {
     "build": "vite build",
-    "test": "vitest",
+    "test": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "Su-Yong",
   "license": "MIT",
-  "devDependencies": {
-    "vite": "^5.2.11",
-    "vite-plugin-dts": "^3.9.1"
-  },
+  "devDependencies": {},
   "dependencies": {}
 }

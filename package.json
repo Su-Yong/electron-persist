@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Scalable storage solution for Electron Application",
   "scripts": {
-    "build": "pnpm -r --parallel run build",
+    "build": "pnpm build:core && pnpm -r --parallel run build",
     "build:core": "pnpm -r --filter='./packages/core' run build",
     "build:main": "pnpm -r --filter='./packages/main' run build",
     "build:renderer": "pnpm -r --filter='./packages/renderer' run build",
@@ -35,6 +35,7 @@
     "@vitest/coverage-v8": "^1.6.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
+    "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   }
 }

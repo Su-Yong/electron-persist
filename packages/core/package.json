@@ -15,7 +15,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "test": "vitest",
+    "test": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "keywords": [],
@@ -23,9 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.12.12",
-    "@types/semver": "^7.5.8",
-    "vite": "^5.2.11",
-    "vite-plugin-dts": "^3.9.1"
+    "@types/semver": "^7.5.8"
   },
   "dependencies": {
     "semver": "^7.6.2",
