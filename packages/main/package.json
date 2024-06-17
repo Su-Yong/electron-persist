@@ -2,6 +2,16 @@
   "name": "@electron-persist/main",
   "version": "0.1.0",
   "description": "A main package of electron-persist",
+  "homepage": "https://github.com/Su-Yong/electron-persist",
+  "bugs": {
+    "email": "simssy2205@gmail.com",
+    "url": "https://github.com/Su-Yong/electron-persist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Su-Yong/electron-persist.git",
+    "directory": "packages/main"
+  },
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.js",

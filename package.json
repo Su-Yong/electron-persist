@@ -2,6 +2,15 @@
   "name": "electron-persist",
   "version": "0.1.1",
   "description": "Scalable storage solution for Electron Application",
+  "homepage": "https://github.com/Su-Yong/electron-persist",
+  "bugs": {
+    "email": "simssy2205@gmail.com",
+    "url": "https://github.com/Su-Yong/electron-persist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Su-Yong/electron-persist.git"
+  },
   "scripts": {
     "build": "pnpm build:core && pnpm -r --parallel run build",
     "build:core": "pnpm -r --filter='./packages/core' run build",
