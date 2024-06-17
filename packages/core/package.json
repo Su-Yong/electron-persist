@@ -22,6 +22,9 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "build": "vite build",
     "test": "vitest run",
