@@ -12,7 +12,12 @@
     "test:core": "pnpm -r --filter='./packages/core' run test",
     "test:main": "pnpm -r --filter='./packages/main' run test",
     "test:renderer": "pnpm -r --filter='./packages/renderer' run test",
-    "test:shared": "pnpm -r --filter='./packages/shared' run test"
+    "test:shared": "pnpm -r --filter='./packages/shared' run test",
+    "coverage": "pnpm -r --parallel run coverage",
+    "coverage:core": "pnpm -r --filter='./packages/core' run coverage",
+    "coverage:main": "pnpm -r --filter='./packages/main' run coverage",
+    "coverage:renderer": "pnpm -r --filter='./packages/renderer' run coverage",
+    "coverage:shared": "pnpm -r --filter='./packages/shared' run coverage"
   },
   "keywords": [],
   "author": "Su-Yong",
@@ -27,6 +32,7 @@
     "@electron-persist/main": "workspace:*"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^1.6.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vitest": "^1.6.0"
