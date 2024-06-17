@@ -32,7 +32,8 @@
     "release:core": "pnpm -r --filter='./packages/core' run release",
     "release:main": "pnpm -r --filter='./packages/main' run release",
     "release:renderer": "pnpm -r --filter='./packages/renderer' run release",
-    "dist": "pnpm build && pnpm release:all"
+    "dist": "pnpm build && pnpm release:all",
+    "rollback-dependencies": "tsx ./scripts/rollback-dependencies.ts"
   },
   "keywords": [],
   "author": "Su-Yong",
@@ -51,18 +52,25 @@
     "@release-it/bumper": "^6.0.1",
     "@vitest/coverage-v8": "^1.6.0",
     "release-it": "^17.3.0",
+    "tsx": "^4.15.5",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
   },
   "release-it": {
+    "npm": {
+      "publish": false
+    },
     "git": {
       "requireCleanWorkingDir": false,
       "commitMessage": "release: v${version}"
     },
     "github": {
       "release": true
+    },
+    "hooks": {
+      "after:bump": "pnpm rollback-dependencies"
     }
   }
 }

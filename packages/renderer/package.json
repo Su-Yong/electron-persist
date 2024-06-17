@@ -39,8 +39,8 @@
     "electron": "^30.1.0"
   },
   "dependencies": {
-    "@electron-persist/core": "0.2.0",
-    "@electron-persist/shared": "0.2.0"
+    "@electron-persist/core": "workspace:*",
+    "@electron-persist/shared": "workspace:*"
   },
   "peerDependencies": {
     "electron": "*"
