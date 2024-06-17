@@ -31,17 +31,6 @@
     "type-fest": "^4.18.2"
   },
   "release-it": {
-    "git": false,
-    "plugins": {
-      "@release-it/bumper": {
-        "out": {
-          "file": "package.json",
-          "path": [
-            "dependencies.@electron-persist/core",
-            "dependencies.@electron-persist/shared"
-          ]
-        }
-      }
-    }
+    "git": false
   }
 }
