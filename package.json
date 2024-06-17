@@ -19,7 +19,7 @@
     "coverage:renderer": "pnpm -r --filter='./packages/renderer' run coverage",
     "coverage:shared": "pnpm -r --filter='./packages/shared' run coverage",
     "release": "release-it",
-    "release:all": "pnpm release:core && pnpm release:main && pnpm release:renderer",
+    "release:all": "pnpm release:core && pnpm release:main && pnpm release:renderer && pnpm release",
     "release:core": "pnpm -r --filter='./packages/core' run release",
     "release:main": "pnpm -r --filter='./packages/main' run release",
     "release:renderer": "pnpm -r --filter='./packages/renderer' run release"
