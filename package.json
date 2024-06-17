@@ -6,8 +6,13 @@
     "build": "pnpm -r --parallel run build",
     "build:core": "pnpm -r --filter='./packages/core' run build",
     "build:main": "pnpm -r --filter='./packages/main' run build",
+    "build:renderer": "pnpm -r --filter='./packages/renderer' run build",
+    "build:shared": "pnpm -r --filter='./packages/shared' run build",
     "test": "pnpm -r --parallel run test",
-    "test:core": "pnpm -r --filter='./packages/core' run test"
+    "test:core": "pnpm -r --filter='./packages/core' run test",
+    "test:main": "pnpm -r --filter='./packages/main' run test",
+    "test:renderer": "pnpm -r --filter='./packages/renderer' run test",
+    "test:shared": "pnpm -r --filter='./packages/shared' run test"
   },
   "keywords": [],
   "author": "Su-Yong",

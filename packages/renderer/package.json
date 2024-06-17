@@ -1,7 +1,7 @@
 {
-  "name": "@electron-persist/main",
+  "name": "@electron-persist/renderer",
   "version": "0.1.0",
-  "description": "A main package of electron-persist",
+  "description": "A renderer package of electron-persist",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.js",
