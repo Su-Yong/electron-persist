@@ -16,7 +16,8 @@
   "scripts": {
     "build": "vite build",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "release-it"
   },
   "keywords": [],
   "author": "Su-Yong",
@@ -30,5 +31,19 @@
   },
   "peerDependencies": {
     "electron": "*"
+  },
+  "release-it": {
+    "git": false,
+    "plugins": {
+      "@release-it/bumper": {
+        "out": {
+          "file": "package.json",
+          "path": [
+            "dependencies.@electron-persist/core",
+            "dependencies.@electron-persist/shared"
+          ]
+        }
+      }
+    }
   }
 }

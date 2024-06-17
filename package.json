@@ -17,7 +17,11 @@
     "coverage:core": "pnpm -r --filter='./packages/core' run coverage",
     "coverage:main": "pnpm -r --filter='./packages/main' run coverage",
     "coverage:renderer": "pnpm -r --filter='./packages/renderer' run coverage",
-    "coverage:shared": "pnpm -r --filter='./packages/shared' run coverage"
+    "coverage:shared": "pnpm -r --filter='./packages/shared' run coverage",
+    "release": "pnpm release:core && pnpm release:main && pnpm release:renderer",
+    "release:core": "pnpm -r --filter='./packages/core' run release",
+    "release:main": "pnpm -r --filter='./packages/main' run release",
+    "release:renderer": "pnpm -r --filter='./packages/renderer' run release"
   },
   "keywords": [],
   "author": "Su-Yong",
@@ -32,10 +36,20 @@
     "@electron-persist/main": "workspace:*"
   },
   "devDependencies": {
+    "@release-it/bumper": "^6.0.1",
     "@vitest/coverage-v8": "^1.6.0",
+    "release-it": "^17.3.0",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vite-plugin-dts": "^3.9.1",
     "vitest": "^1.6.0"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "release: v${version}"
+    },
+    "github": {
+      "release": true
+    }
   }
 }
