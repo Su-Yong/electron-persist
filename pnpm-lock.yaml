@@ -14,6 +14,9 @@ importers:
       '@electron-persist/main':
         specifier: workspace:*
         version: link:packages/main
+      '@electron-persist/renderer':
+        specifier: workspace:*
+        version: link:packages/renderer
     devDependencies:
       '@release-it/bumper':
         specifier: ^6.0.1

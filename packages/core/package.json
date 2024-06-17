@@ -31,6 +31,9 @@
     "type-fest": "^4.18.2"
   },
   "release-it": {
-    "git": false
+    "git": false,
+    "github": {
+      "release": true
+    }
   }
 }

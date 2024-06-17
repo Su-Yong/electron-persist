@@ -1,5 +1,5 @@
 {
-  "name": "@suyongs/electron-persist",
+  "name": "electron-persist",
   "version": "0.1.0",
   "description": "Scalable storage solution for Electron Application",
   "scripts": {
@@ -18,7 +18,8 @@
     "coverage:main": "pnpm -r --filter='./packages/main' run coverage",
     "coverage:renderer": "pnpm -r --filter='./packages/renderer' run coverage",
     "coverage:shared": "pnpm -r --filter='./packages/shared' run coverage",
-    "release": "pnpm release:core && pnpm release:main && pnpm release:renderer",
+    "release": "release-it",
+    "release:all": "pnpm release:core && pnpm release:main && pnpm release:renderer",
     "release:core": "pnpm -r --filter='./packages/core' run release",
     "release:main": "pnpm -r --filter='./packages/main' run release",
     "release:renderer": "pnpm -r --filter='./packages/renderer' run release"
@@ -33,7 +34,8 @@
   },
   "dependencies": {
     "@electron-persist/core": "workspace:*",
-    "@electron-persist/main": "workspace:*"
+    "@electron-persist/main": "workspace:*",
+    "@electron-persist/renderer": "workspace:*"
   },
   "devDependencies": {
     "@release-it/bumper": "^6.0.1",
@@ -47,9 +49,6 @@
   "release-it": {
     "git": {
       "commitMessage": "release: v${version}"
-    },
-    "github": {
-      "release": true
     }
   }
 }
