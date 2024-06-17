@@ -1,12 +1,16 @@
-# Electron-persist
-Scalable storage solution for Electron Application
+# electron-persist
+> Scalable storage solution for Electron Application
+
+> [!IMPORTANT]  
+> Note that this package isn't published yet.
+> This package will be published very soon.
 
 # Feature
-- Fully typed with TypeScript
-- Nearly zero dependencies: (type-fest, semver)
-- Fully customizable storage method
-- Support migration from previous version
-- Support configuration validation
+- 🚀 Fully typed with TypeScript
+- 🫙 Nearly zero dependencies: ([type-fest](https://github.com/sindresorhus/type-fest), [semver](https://github.com/npm/node-semver))
+- 📦 Fully customizable storage method
+- 🚛 Support migration from previous version
+- ✅ Support configuration validation
 
 # Installation
 ```bash
@@ -82,7 +86,26 @@ config.set('key.type.magic.b', ['string', 1]);
   
   config.get('key.type.magic.a') // -> number;
   ```
-  
+
+# API
+> [!NOTE]  
+> TODO
+## Core
+### Config
+### Persister
+- MemoryPersister
+### Validator
+### Migrator
+
+## Main
+- registerConfig
+### FilePersister
+
+## Renderer
+- getConfig
+### IpcRendererPersister
+
+
 # FAQ
 ## How to use custom persister?
 ```ts
