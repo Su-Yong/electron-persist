@@ -1,6 +1,6 @@
 {
   "name": "electron-persist",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Scalable storage solution for Electron Application",
   "scripts": {
     "build": "pnpm build:core && pnpm -r --parallel run build",
